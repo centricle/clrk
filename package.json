@@ -1,0 +1,18 @@
+{
+  "name": "@centricle/clrk",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Files documents dropped into ~/Documents/Inbox, using a headless Claude call that classifies and a script that acts.",
+  "type": "module",
+  "bin": {
+    "clrk": "bin/cli.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "AGPL-3.0-only",
+  "author": "Kevin Smith <ksmith@centricle.com> (https://centricle.com)",
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\""
+  }
+}
