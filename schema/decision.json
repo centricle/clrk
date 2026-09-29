@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": ["file", "review"],
+      "description": "file: move it to destination. review: leave it for a person."
+    },
+    "destination": {
+      "type": ["string", "null"],
+      "description": "Folder path relative to ~/Documents, using / separators, e.g. \"Taxes/2025\". Never absolute, never inside Inbox. null when action is review."
+    },
+    "filename": {
+      "type": ["string", "null"],
+      "description": "A descriptive filename without extension, used only when rename_allowed is true. null otherwise."
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "How sure you are that destination is where this document belongs."
+    },
+    "summary": {
+      "type": "string",
+      "description": "One sentence: what the document is."
+    },
+    "reason": {
+      "type": "string",
+      "description": "One sentence: why this destination, citing the rule that applies."
+    },
+    "new_folder_rationale": {
+      "type": ["string", "null"],
+      "description": "Why no existing folder fits, when destination does not exist yet. null otherwise."
+    }
+  },
+  "required": ["action", "destination", "filename", "confidence", "summary", "reason", "new_folder_rationale"],
+  "additionalProperties": false
+}
