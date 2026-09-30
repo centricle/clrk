@@ -8,8 +8,8 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSyn
 import { tmpdir } from 'node:os';
 import { delimiter, join, resolve } from 'node:path';
 
-// `open` hands an app a bare system PATH; launchd hands it the plist's. Either
-// way the tools this needs live under Homebrew.
+// `open` passes the caller's PATH through; launchd hands the app the plist's.
+// Neither is sure to include Homebrew, where the tools this needs live.
 const EXTRA_PATH = ['/opt/homebrew/opt/node@22/bin', '/opt/homebrew/bin', '/usr/local/bin'];
 const pathParts = (process.env.PATH || '/usr/bin:/bin:/usr/sbin:/sbin').split(delimiter);
 process.env.PATH = [...EXTRA_PATH.filter((p) => !pathParts.includes(p)), ...pathParts].join(delimiter);
