@@ -11,6 +11,10 @@
 # blocks an unsigned package, and while the stub is ad-hoc, build.sh places the
 # app directly instead.
 #
+# The package is for the machine that builds it: the stub carries this
+# checkout's absolute path to bin/cli.mjs, and the package targets Apple
+# silicon only.
+#
 # Not yet run end to end.
 set -euo pipefail
 
