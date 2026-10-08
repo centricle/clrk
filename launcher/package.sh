@@ -14,8 +14,6 @@
 # The package is for the machine that builds it: the stub carries this
 # checkout's absolute path to bin/cli.mjs, and the package targets Apple
 # silicon only.
-#
-# Not yet run end to end.
 set -euo pipefail
 
 repo="$(cd "$(dirname "$0")/.." && pwd)"
