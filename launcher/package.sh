@@ -47,7 +47,10 @@ mkdir -p "$build/root"
 
 # Build and sign the app into the package root, not ~/Applications.
 "$repo/launcher/build.sh" --replace --dest "$build/root"
-codesign -dv --verbose=4 "$build/root/$title.app" 2>&1 | grep -q 'Authority=Developer ID Application' \
+# Captured first: piped under pipefail, grep -q exits at the first match and
+# codesign can then die writing to a closed pipe, failing a good signature.
+signature="$(codesign -dv --verbose=4 "$build/root/$title.app" 2>&1 || true)"
+grep -q 'Authority=Developer ID Application' <<< "$signature" \
   || { echo "stub is not Developer ID signed" >&2; exit 1; }
 
 # Never relocatable: the installer must not go looking for, and update, a stray
@@ -81,8 +84,16 @@ productbuild --distribution "$build/distribution.xml" --package-path "$build" \
   --sign "$pkg_id" "$out"
 
 if [ "$notarize" -eq 1 ]; then
-  xcrun notarytool submit "$out" --keychain-profile "$profile" --wait
-  xcrun stapler staple "$out"
+  # A timeout is not a rejection: the submission stays queued, and a ticket
+  # staples only to this exact file, so finish by hand instead of rebuilding.
+  resume() {
+    echo "Notarization did not finish. Check on it, then staple:" >&2
+    echo "  xcrun notarytool history --keychain-profile $profile" >&2
+    echo "  xcrun stapler staple '$out'" >&2
+    exit 1
+  }
+  xcrun notarytool submit "$out" --keychain-profile "$profile" --wait --timeout 30m || resume
+  xcrun stapler staple "$out" || resume
   xcrun stapler validate "$out"
 fi
 pkgutil --check-signature "$out"
