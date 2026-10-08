@@ -39,6 +39,20 @@ if [ -z "$app_id" ] || [ -z "$pkg_id" ]; then
   exit 1
 fi
 
+if [ "$notarize" -eq 1 ]; then
+  # Asked before the build, not after it: behind a locked screen notarytool
+  # cannot read its profile and reports it as missing.
+  if ! reply="$(xcrun notarytool history --keychain-profile "$profile" 2>&1)"; then
+    echo "$reply" >&2
+    console="$(ioreg -n Root -d1 2>/dev/null || true)"
+    if grep -q '"CGSSessionScreenIsLocked"=Yes' <<< "$console"; then
+      echo "The screen is locked, so the profile '$profile' cannot be read." >&2
+      echo "Unlock and run this again; nothing needs storing." >&2
+    fi
+    exit 1
+  fi
+fi
+
 build="$repo/build/pkg"
 rm -rf "$build"
 mkdir -p "$build/root"
